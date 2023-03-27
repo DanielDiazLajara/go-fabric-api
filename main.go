@@ -1,13 +1,36 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 )
 
-type invokation struct {
-	ChannelName   string `json:"channel_name"`
-	ChaincodeName string `json:"chaincode_name"`
-	FunctionName  string `json:"function_name"`
+var (
+	mspID        = ""
+	certPath     = ""
+	keyPath      = ""
+	tlsCertPath  = ""
+	peerEndpoint = ""
+	gatewayPeer  = ""
+)
+
+func init() {
+	mspID = os.Getenv("MSP_ID")
+	certPath = os.Getenv("CERT_PATH")
+	keyPath = os.Getenv("KEY_PATH")
+	tlsCertPath = os.Getenv("TLS_CERT_PATH")
+	peerEndpoint = os.Getenv("PEER_ENDPOINT")
+	gatewayPeer = os.Getenv("PEER_GATEWAY")
+	/*
+		mspID        = "Org1MSP"
+		cryptoPath   = "../../test-network/organizations/peerOrganizations/org1.example.com"
+		certPath     = cryptoPath + "/users/User1@org1.example.com/msp/signcerts/cert.pem"
+		keyPath      = cryptoPath + "/users/User1@org1.example.com/msp/keystore/"
+		tlsCertPath  = cryptoPath + "/peers/peer0.org1.example.com/tls/ca.crt"
+		peerEndpoint = "localhost:7051"
+		gatewayPeer  = "peer0.org1.example.com"
+	*/
 }
 
 /*

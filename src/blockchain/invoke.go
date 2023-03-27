@@ -31,7 +31,7 @@ func (inv *Invokation) Execute(connection *Connection) (string, error) {
 		client.WithCommitStatusTimeout(1*time.Minute),
 	)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to connect to network: %w", err)
 	}
 	defer gateway.Close()
 

@@ -18,27 +18,27 @@ import (
 )
 
 type Connection struct {
-	mspID        string
-	cryptoPath   string
-	certPath     string
-	keyPath      string
-	tlsCertPath  string
-	peerEndpoint string
-	gatewayPeer  string
+	MspID        string
+	CryptoPath   string
+	CertPath     string
+	KeyPath      string
+	TlsCertPath  string
+	PeerEndpoint string
+	GatewayPeer  string
 }
 
 // newGrpcConnection creates a gRPC connection to the Gateway server.
 func (con *Connection) NewGrpcConnection() *grpc.ClientConn {
-	certificate, err := loadCertificate(con.tlsCertPath)
+	certificate, err := loadCertificate(con.TlsCertPath)
 	if err != nil {
 		panic(err)
 	}
 
 	certPool := x509.NewCertPool()
 	certPool.AddCert(certificate)
-	transportCredentials := credentials.NewClientTLSFromCert(certPool, con.gatewayPeer)
+	transportCredentials := credentials.NewClientTLSFromCert(certPool, con.GatewayPeer)
 
-	connection, err := grpc.Dial(con.peerEndpoint, grpc.WithTransportCredentials(transportCredentials))
+	connection, err := grpc.Dial(con.PeerEndpoint, grpc.WithTransportCredentials(transportCredentials))
 	if err != nil {
 		panic(fmt.Errorf("failed to create gRPC connection: %w", err))
 	}
@@ -48,12 +48,12 @@ func (con *Connection) NewGrpcConnection() *grpc.ClientConn {
 
 // newIdentity creates a client identity for this Gateway connection using an X.509 certificate.
 func (con *Connection) NewIdentity() *identity.X509Identity {
-	certificate, err := loadCertificate(con.certPath)
+	certificate, err := loadCertificate(con.CertPath)
 	if err != nil {
 		panic(err)
 	}
 
-	id, err := identity.NewX509Identity(con.mspID, certificate)
+	id, err := identity.NewX509Identity(con.MspID, certificate)
 	if err != nil {
 		panic(err)
 	}
@@ -71,11 +71,11 @@ func loadCertificate(filename string) (*x509.Certificate, error) {
 
 // newSign creates a function that generates a digital signature from a message digest using a private key.
 func (con *Connection) NewSign() identity.Sign {
-	files, err := os.ReadDir(con.keyPath)
+	files, err := os.ReadDir(con.KeyPath)
 	if err != nil {
 		panic(fmt.Errorf("failed to read private key directory: %w", err))
 	}
-	privateKeyPEM, err := os.ReadFile(path.Join(con.keyPath, files[0].Name()))
+	privateKeyPEM, err := os.ReadFile(path.Join(con.KeyPath, files[0].Name()))
 
 	if err != nil {
 		panic(fmt.Errorf("failed to read private key file: %w", err))

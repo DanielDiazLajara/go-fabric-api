@@ -16,7 +16,7 @@ type Query struct {
 }
 
 // Evaluate a transaction by assetID to query ledger state.
-func (query *Query) Execute(connection *Connection) {
+func (query *Query) Execute(connection *Connection) (string, error) {
 	// The gRPC client connection should be shared by all Gateway connections to this endpoint
 	clientConnection := connection.NewGrpcConnection()
 	defer clientConnection.Close()
@@ -36,7 +36,7 @@ func (query *Query) Execute(connection *Connection) {
 		client.WithCommitStatusTimeout(1*time.Minute),
 	)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to connect to network: %w", err)
 	}
 	defer gw.Close()
 
@@ -50,9 +50,10 @@ func (query *Query) Execute(connection *Connection) {
 
 	evaluateResult, err := contract.EvaluateTransaction(query.FunctionName, query.Arguments...)
 	if err != nil {
-		panic(fmt.Errorf("failed to evaluate transaction: %w", err))
+		return "", fmt.Errorf("failed to evaluate transaction: %w", err)
 	}
 	result := utils.FormatJSON(evaluateResult)
 
-	fmt.Printf("*** Result:%s\n", result)
+	return string(result), nil
+
 }

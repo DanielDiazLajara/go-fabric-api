@@ -37,7 +37,7 @@ func main() {
 	router.POST("/invoke", invoke)
 	router.POST("/query", query)
 
-	router.Run("localhost:3000") // TODO MAKE PORT ENV
+	router.Run("0.0.0.0:3000") // TODO MAKE PORT ENV
 }
 
 func invoke(c *gin.Context) {

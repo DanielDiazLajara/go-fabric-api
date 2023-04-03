@@ -1,0 +1,33 @@
+
+# SPDX-License-Identifier: Apache-2.0
+version: '2.1'
+
+volumes:
+  pgdata:
+  walletstore:
+
+networks:
+  mynetwork.com:
+    name: fabric_test
+
+services:
+
+  gogabric.api.com:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gofabric.api.com
+    hostname: gogabric.api.com
+    environment:
+      - MSP_ID=Org1MSP
+      - CERT_PATH=/tmp/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/cert.pem
+      - KEY_PATH=/tmp/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/
+      - TLS_CERT_PATH=/tmp/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+      - PEER_ENDPOINT=peer0.org1.example.com:7051
+      - PEER_GATEWAY=peer0.org1.example.com
+    volumes:
+      - ./organizations:/tmp/organizations
+    ports:
+      - 3000:3000
+    networks:
+      - mynetwork.com

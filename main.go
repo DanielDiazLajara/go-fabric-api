@@ -2,8 +2,9 @@ package main
 
 import (
 	"go-fabric-api/src/blockchain"
+	"go-fabric-api/src/utils"
 	"net/http"
-	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,17 +12,43 @@ import (
 const paramsInvokeError = "expected body params: channel_name <string>, chaincode_name <string>, function_name <string>, and arguments <[]string>"
 
 var connection blockchain.Connection
+var port int
 
 func init() {
-	connection.MspID = os.Getenv("MSP_ID")
-	connection.CertPath = os.Getenv("CERT_PATH")
-	connection.KeyPath = os.Getenv("KEY_PATH")
-	connection.TlsCertPath = os.Getenv("TLS_CERT_PATH")
-	connection.PeerEndpoint = os.Getenv("PEER_ENDPOINT")
-	connection.GatewayPeer = os.Getenv("PEER_GATEWAY")
+	var err error
+	// Checking env content
+	if connection.MspID, err = utils.GetenvStr("MSP_ID"); err != nil {
+		panic(err.Error())
+	}
+	if connection.CertPath, err = utils.GetenvStr("CERT_PATH"); err != nil {
+		panic(err.Error())
+	}
+	if connection.KeyPath, err = utils.GetenvStr("KEY_PATH"); err != nil {
+		panic(err.Error())
+	}
+	if connection.TlsCertPath, err = utils.GetenvStr("TLS_CERT_PATH"); err != nil {
+		panic(err.Error())
+	}
+	if connection.PeerEndpoint, err = utils.GetenvStr("PEER_ENDPOINT"); err != nil {
+		panic(err.Error())
+	}
+	if connection.GatewayPeer, err = utils.GetenvStr("PEER_GATEWAY"); err != nil {
+		panic(err.Error())
+	}
+	if port, err = utils.GetenvInt("PORT"); err != nil {
+		panic(err.Error())
+	}
+	// Check files existance
+	if !utils.FileExists(connection.CertPath) {
+		panic(connection.CertPath + " file does not exist")
+	}
+	if !utils.FileExists(connection.KeyPath) {
+		panic(connection.KeyPath + " file does not exist")
+	}
+	if !utils.FileExists(connection.TlsCertPath) {
+		panic(connection.TlsCertPath + " file does not exist")
+	}
 }
-
-// TODO CHECK ENVS
 
 func main() {
 	router := gin.Default()
@@ -29,7 +56,7 @@ func main() {
 	router.POST("/invoke", invoke)
 	router.POST("/query", query)
 
-	router.Run("0.0.0.0:3000") // TODO MAKE PORT ENV
+	router.Run("0.0.0.0:" + strconv.Itoa(port)) // TODO MAKE PORT ENV
 }
 
 func invoke(c *gin.Context) {

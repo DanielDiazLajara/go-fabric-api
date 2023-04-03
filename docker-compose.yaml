@@ -25,6 +25,7 @@ services:
       - TLS_CERT_PATH=/tmp/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
       - PEER_ENDPOINT=peer0.org1.example.com:7051
       - PEER_GATEWAY=peer0.org1.example.com
+      - PORT=3000
     volumes:
       - ./organizations:/tmp/organizations
     ports:

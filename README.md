@@ -1,2 +1,2 @@
 # go-fabric-api
-Generic Go-based API for Hyperledger Fabric
+Plug-and-play Go-based API for Hyperledger Fabric
